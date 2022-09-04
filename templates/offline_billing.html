@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+        
+        <link rel="stylesheet" href="assets/bootstrap-table.min.css"/>
+        <title>Offline Billing</title>
+        
+    </head>
+    <body>
+      <nav class="navbar navbar-expand-lg navbar-dark bg-dark ">
+            <a class="navbar-brand  mb-0 h1" href="#">
+                <img src="https://drive.google.com/uc?export=view&id=106CxvZBVDFI8exFEHEDDc24xDKDbaudu" width="100" height="100" class="d-inline-block align-top" alt="">
+            </a>
+            <a class="navbar-brand  mb-0 h1" href="#">
+                Hungry Box POS Lite
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                  <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+              </ul>
+              <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+              </form>
+            </div>
+      </nav>
+      <div class="card bg-dark text-white">
+        <img src="https://drive.google.com/uc?export=view&id=1smT3G5RfdaaVxyEpiGbEtJgQ4x7mYaJN" class="card-img" alt="...">
+          <div class="card-img-overlay">
+            <div class="row g-0 text">
+              <div class="p-3 col-sm-6 col-md-8 mb-5">
+                <table id="example" class="table table-striped" style="width:100%">
+                  <thead>
+                    <tr>
+                      {%for i in ["ID"," Item","Rate","Add-to-Bill"]%}
+                        <th><h4><b class="text-white">{{i}}</b></h4></th>
+                      {%endfor%}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {%for o in Menu%}
+                      <form action="/add_info_in_bill_table" method="POST">
+                        <tr class="text-light">
+                          <td><input name='id' value={{o[0]}}></td>
+                          <td><input name="item" value={{o[1]}}></td>
+                          <td><input name="rate" value={{o[2]}}></td>
+                          <td><input name="quantity" value={{o[3]}} ></td>
+                          <td><button type="submit" class="btn btn-light btn-outline-dark"><b>+</b></button></form></td>
+                        </tr>
+                      </form>
+                    {%endfor%}
+                  </tbody>
+                </table>
+              </div>
+              <div class="p-5 col-6 col-md-4">
+                <div class="my-5 ">
+                  <div class="my-5">
+                    <div class="mx-5 my-5 bg-dark">
+                      <tfoot class="bg-dark my-5">
+                      {%for i in Tax_total_payble_total%}
+                        <tr>
+                          <th><h4><b class="text-white">Total :- </b><b class="text-white mx-2">{{i[2]}}</b></h4></h4></th>
+                        </tr>
+                        <tr>
+                          <th><h4><b class="text-white">Tax(5% Gst) :- </b><b class="text-white mx-2">{{i[0]}}</b></h4></th>
+                        </tr>
+                        <tr>
+                          <th><h4><b class="text-white">Total Payble :- </b><b class="text-white mx-2">{{i[1]}}</b></h4></th>
+                        </tr>
+                      {%endfor%}
+                      </tfoot>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="container px-4 text-center">
+              <div class="md-8">
+                <div class="col">
+                  <div class="p-3 bg-dark ">
+                    <div class="container text-center w-100 ">
+                    <div class="row row-cols-auto">
+                      <div class="col"><b>Item</b></div>
+                      <div class="col"><b>Rate</b></div>
+                      <div class="col"><b>Quantity</b></div>
+                      <div class="col"><b>Individual Sum</b></div>
+                      <div class="col"><b>Remove</b></div>
+                    </div>
+                    </div>
+                  </div>
+                  {%for i in Bill_rows_forms%}
+                  <div class="p-3 ">
+                    <div class="container text-center w-100 ">
+                      <div class="row row-cols-auto">
+                        <div class="col"><b>{{i[1]}}</b></div>
+                        <div class="col"><b>{{i[2]}}</b></div>
+                        <div class="col">
+                          <div class="row">
+                            <form action="/decrease_quantity" method="POST">
+                              <button name="dec_quantity"  class="btn btn-light btn-outline-dark" type="submit" value="{{i[0]}}">-</button>
+                            </form>
+                            <b class="mx-2">{{i[3]}}</b>
+                            <form action="/increase_quantity" method="POST">
+                              <button name="inc_quantity"  class="btn btn-light btn-outline-dark" type="submit" value="{{i[0]}}">+</button>
+                            </form>
+                          </div>
+                        </div>
+                        <div class="col"><b>{{i[4]}}</b></div>
+                        <div class="col"><b><form action="/remove_item" method="POST"><button  class="btn btn-light btn-outline-dark" name="remove_item" type="submit" value="{{i[0]}}">X</button></form></b></div>
+                      </div>
+                    </div>
+                  </div>
+                  {%endfor%}
+                  </div>
+                  <div class="col">
+                    <div class="p-3"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="ml-5">
+                <form action="/commit_bill" method="GET">
+                  <button type="submit" class="btn btn-secondary btn-lg">Commit</button>
+                <form>
+              </div>
+            </div>
+          </div>
+      </div>
+      
+      <!-- Optional JavaScript -->
+      <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+      <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+      <script src=="assets\bootstrap-table.min.js"><script>       
+   </body>
+</html>
